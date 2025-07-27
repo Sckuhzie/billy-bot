@@ -7,6 +7,7 @@ Planned feature
 - [ ] Randomly insult people
 - [ ] Check modification in youtube playlist
 
-## Nvidia-nim
+## Links
 
-[text](https://build.nvidia.com/)
+nvida-nim API : [text](https://build.nvidia.com/)
+Dicord.py documentation : [text](https://discordpy.readthedocs.io/en/latest/index.html)
