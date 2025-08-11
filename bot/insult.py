@@ -10,7 +10,8 @@ load_dotenv()
 api_key = os.getenv("NVIDIA_API_KEY")
 expiration_date = datetime.strptime(os.getenv("NVIDA_EXPIRATION_DATE"), "%d/%m/%Y")
 
-system_message = "On va te donner un message d'une personne extraite d'une conversation discord. Ton rôle est d'y répondre de manière très sarcastique et agressive."
+system_message = """On va te donner un message d'une personne extraite d'une conversation discord. Ton rôle est d'y répondre de manière très sarcastique et agressive."""
+# Sur ce serveur , le message "When the witcher ?" est une private joke signifiant quand est la prochaine session du JDR the witcher, car les joueurs n'arrivent jamais à trouver de date où tout le monde est disponible."""
 
 
 async def create_insult(user_name: str, user_message: str):
@@ -50,6 +51,7 @@ async def get_completion(
 async def main():
     user_name = "Jean-Paul Théodule"
     user_message = "En vrai je pense juste voc faut vraiment que j'avance sur ma fig"
+    # user_message = "Des @FDP ce soir ?"
     response = await create_insult(user_name, user_message)
     print(response)
 
