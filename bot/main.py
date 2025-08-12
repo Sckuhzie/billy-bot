@@ -91,12 +91,12 @@ async def set_variable_float(ctx: Context, key: str, value: float):
 
 
 @bot.command()
-async def enable_witcher(ctx: Context, state: bool):
+async def toggle_witcher(ctx: Context, state: bool):
     print(state)
     print(type(state))
     global_var.set("DO_WITCHER", state)
     if state:
-        await ctx.send("When witcher activated")
+        await ctx.send("When witcher enabled")
     else:
         await ctx.send("When witcher disabled")
 

@@ -13,17 +13,19 @@ Use python 3.12
 
 ### Commands
 
-- `!ping` replies with "pong", username, and timestamp.
+- `!ping`
 - `!insult <message>` generates a custom insult.
-- `!enable_witcher <true|false>` – Toggle periodic `"When the witcher ?"` posts.
+- `!toggle_witcher <true|false>` – Toggle periodic `"When the witcher ?"` posts.
 - **Global Variables**:
   - `!get_variables` – Show current values.
   - `!set_variable_float <key> <value>` – Update floats.
 
-## Planned feature
+## Planned features
 
 - [x] Class to handle global variables
+  - [ ] Make it robust to typing
 - [x] Randomly insult people
+  - [ ] Proper reply to messages (with message stack)
   - [ ] Add multiple system prompt to introduce private jokes in the answers
   - [ ] Benchmark other LLMs to see if some of them are better (Now, it answer always the same thing to the same message)
 - [ ] Check modification in youtube playlist
