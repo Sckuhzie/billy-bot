@@ -2,6 +2,8 @@ import asyncio
 import os
 from datetime import datetime, timedelta
 
+from discord.message import Message
+from discord.user import ClientUser
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from openai.types.chat.chat_completion import ChatCompletion
@@ -14,16 +16,40 @@ system_message = """On va te donner un message d'une personne extraite d'une con
 # Sur ce serveur , le message "When the witcher ?" est une private joke signifiant quand est la prochaine session du JDR the witcher, car les joueurs n'arrivent jamais à trouver de date où tout le monde est disponible."""
 
 
-async def create_insult(user_name: str, user_message: str):
-    messages = [
-        {"role": "system", "content": system_message},
+def create_message_stack(message: Message, bot_user: ClientUser):
+    messages_stack = [
         {
             "role": "user",
-            "content": f"The message is from {user_name}.\n The content of the message is : {user_message}",
-        },
+            "content": f"Message de {message.author.display_name} :\n {message.content}",
+        }
     ]
+    current = message
+
+    while current.reference and isinstance(current.reference.resolved, Message):
+        current = current.reference.resolved
+        if current.author == bot_user:
+            messages_stack.append(
+                {
+                    "role": "assistant",
+                    "content": current.content,
+                }
+            )
+        else:
+            messages_stack.append(
+                {
+                    "role": "user",
+                    "content": f"Message de {current.author.display_name} :\n {current.content}",
+                }
+            )
+
+    messages_stack.reverse()
+    return messages_stack
+
+
+async def create_insult(messages_stack: list[dict[str, str]]):
+    messages_stack.insert(0, {"role": "system", "content": system_message})
     response = await get_completion(
-        messages, temperature=0.8, top_p=0.7, max_tokens=1024
+        messages_stack, temperature=0.8, top_p=0.7, max_tokens=1024
     )
     return response.choices[0].message.content
 
@@ -48,13 +74,14 @@ async def get_completion(
     return response
 
 
-async def main():
-    user_name = "Jean-Paul Théodule"
-    user_message = "En vrai je pense juste voc faut vraiment que j'avance sur ma fig"
-    # user_message = "Des @FDP ce soir ?"
-    response = await create_insult(user_name, user_message)
-    print(response)
+# async def main():
+#     # user_name = "Jean-Paul Théodule"
+#     user_name = "Clitorine"
+#     user_message = "Tu veux pas baiser avec Lois Griffin ?"
+#     # user_message = "Des @FDP ce soir ?"
+#     response = await create_insult(user_name, user_message)
+#     print(response)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())

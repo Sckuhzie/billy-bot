@@ -14,7 +14,6 @@ Use python 3.12
 ### Commands
 
 - `!ping`
-- `!insult <message>` generates a custom insult.
 - `!toggle_witcher <true|false>` – Toggle periodic `"When the witcher ?"` posts.
 - **Global Variables**:
   - `!get_variables` – Show current values.
@@ -25,7 +24,8 @@ Use python 3.12
 - [x] Class to handle global variables
   - [ ] Make it robust to typing
 - [x] Randomly insult people
-  - [ ] Proper reply to messages (with message stack)
+  - [x] Proper reply to messages
+  - [ ] Check for message stack only two messages (discord api limitation ?) (fetch the message from their ID)
   - [ ] Add multiple system prompt to introduce private jokes in the answers
   - [ ] Benchmark other LLMs to see if some of them are better (Now, it answer always the same thing to the same message)
 - [ ] Check modification in youtube playlist

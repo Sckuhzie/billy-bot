@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 from global_var import GlobalVars
-from insult import create_insult
+from insult import create_insult, create_message_stack
 
 load_dotenv()
 bot_token = os.getenv("DISCORD_BOT_TOKEN")
@@ -44,32 +44,35 @@ async def on_message(message: discord.Message):
     )
 
     if message.author == bot.user:
-        pass
+        return
 
-    elif message.content.startswith(bot.command_prefix):
+    if message.content.startswith(bot.command_prefix):
         await bot.process_commands(message)
+        return
 
-    elif (
+    if (
         mentioned
         or replied_to_bot
         or rd.random() < global_var.get("PROBABILITY_INSULT")
     ):
-        username = message.author.display_name
-        message_content = message.content
+        # username = message.author.display_name
+        messages_stack = create_message_stack(message, bot.user)
+
         try:
-            response = await create_insult(username, message_content)
-            await message.channel.send(response)
+            response = await create_insult(messages_stack)
+            await message.reply(response, mention_author=False)
         except Exception as e:
             await message.channel.send(
                 f"⚠️ An error has occured when generating the answer :\n{e}"
             )
+    return
 
 
-@bot.command()
-async def insult(ctx: Context, *, message: str):
-    username = ctx.author.display_name
-    response = await create_insult(username, message)
-    await ctx.send(response)
+# @bot.command()
+# async def insult(ctx: Context, *, message: str):
+#     username = ctx.author.display_name
+#     response = await create_insult(username, message)
+#     await ctx.send(response)
 
 
 @bot.command()
