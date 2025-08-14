@@ -8,6 +8,7 @@ from discord.ext.commands import Context
 from dotenv import load_dotenv
 from global_var import GlobalVars
 from insult import create_insult, create_message_stack
+from yt_playlist import get_playlist_diff, save_playlist_txt
 
 load_dotenv()
 bot_token = os.getenv("DISCORD_BOT_TOKEN")
@@ -31,6 +32,11 @@ global_var = GlobalVars()
 global_var.add("PROBABILITY_INSULT", PROBABILITY_INSULT)
 global_var.add("AVERAGE_DELAY_WITCHER", AVERAGE_DELAY_WITCHER)
 global_var.add("DO_WITCHER", False)
+
+playlists_dict = {
+    "loose": "PLs5RvnKyJmy74KrJ0YdR_W3zFvKRfMwTE",
+    "surplus": "PLs5RvnKyJmy55bJR-uYQHyZk4DMoqZGAg",
+}
 
 
 @bot.event
@@ -102,6 +108,30 @@ async def toggle_witcher(ctx: Context, state: bool):
         await ctx.send("When witcher enabled")
     else:
         await ctx.send("When witcher disabled")
+
+
+@bot.command()
+async def playlist_diff(ctx: Context, playlist_name: str):
+    try:
+        playlist_id = playlists_dict[playlist_name]
+        message = get_playlist_diff(playlist_id)
+        await ctx.send(message)
+    except KeyError:
+        await ctx.send(
+            f"Playlist : {playlist_name} is not supported. Playlists supported are : {playlists_dict.keys()}"
+        )
+
+
+@bot.command()
+async def save_playlist(ctx: Context, playlist_name: str):
+    try:
+        playlist_id = playlists_dict[playlist_name]
+        output = save_playlist_txt(playlist_id)
+        await ctx.send(f"Playlist saved")
+    except KeyError:
+        await ctx.send(
+            f"Playlist : {playlist_name} is not supported. Playlists supported are : {playlists_dict.keys()}"
+        )
 
 
 @tasks.loop(seconds=60)
