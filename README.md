@@ -15,6 +15,8 @@ Use python 3.12
 
 - `!ping`
 - `!toggle_witcher <true|false>` – Toggle periodic `"When the witcher ?"` posts.
+- `!save_playlist <playlist_name>` – Save the current state of a playlist (Erases previous state).
+- `!playlist_diff <playlist_name>` – Show the diff between the current state of a playlist and the saved one.
 - **Global Variables**:
   - `!get_variables` – Show current values.
   - `!set_variable_float <key> <value>` – Update floats.
@@ -29,6 +31,7 @@ Use python 3.12
   - [ ] Add multiple system prompt to introduce private jokes in the answers
   - [ ] Benchmark other LLMs to see if some of them are better (Now, it answer always the same thing to the same message)
 - [ ] Check modification in youtube playlist
+  - [ ] Handle saves correctly on deployement
 - [x] When the witcher ???
   - [ ] Random when the witcher messages (images, maybe LLM generated ?)
   - [ ] Create polls to know when is the next witcher session

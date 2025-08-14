@@ -1,5 +1,6 @@
 import difflib
 import os
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
@@ -90,7 +91,7 @@ def get_playlist_diff(playlist_id: str):
 
 def save_playlist_txt(playlist_id: str):
     video_list = get_playlist_videos(playlist_id=playlist_id)
-    txt_output = ""
+    txt_output = f"{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n"
     for v in video_list:
         txt_output += f"{v['title']} — {v['url']}\n"
 

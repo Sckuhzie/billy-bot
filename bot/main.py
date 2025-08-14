@@ -36,6 +36,9 @@ global_var.add("DO_WITCHER", False)
 playlists_dict = {
     "loose": "PLs5RvnKyJmy74KrJ0YdR_W3zFvKRfMwTE",
     "surplus": "PLs5RvnKyJmy55bJR-uYQHyZk4DMoqZGAg",
+    "inclusion": "PLs5RvnKyJmy6g8B2LcllOMMQkIQUwS-VX",
+    "claques": "PL0p2EkWqwO1Ac7EvGTsKjJl2Kgp7Q7WFv",
+    "retombees": "PL0p2EkWqwO1Bb2eKwvBjFWtX4JQ-k5r0Y",
 }
 
 
@@ -61,7 +64,6 @@ async def on_message(message: discord.Message):
         or replied_to_bot
         or rd.random() < global_var.get("PROBABILITY_INSULT")
     ):
-        # username = message.author.display_name
         messages_stack = create_message_stack(message, bot.user)
 
         try:
@@ -72,13 +74,6 @@ async def on_message(message: discord.Message):
                 f"⚠️ An error has occured when generating the answer :\n{e}"
             )
     return
-
-
-# @bot.command()
-# async def insult(ctx: Context, *, message: str):
-#     username = ctx.author.display_name
-#     response = await create_insult(username, message)
-#     await ctx.send(response)
 
 
 @bot.command()
