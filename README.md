@@ -34,7 +34,8 @@ Use python 3.12
   - [ ] Handle saves correctly on deployement
 - [x] When the witcher ???
   - [ ] Random when the witcher messages (images, maybe LLM generated ?)
-  - [ ] Create polls to know when is the next witcher session
+  - [x] Create polls to know when is the next witcher session
+  - [ ] Check for bugs ?
 
 ## Usefull links
 
