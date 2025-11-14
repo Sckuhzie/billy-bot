@@ -77,9 +77,9 @@ def get_playlist_diff(playlist_id: str):
     discord_message = "```diff\n"
     for line in diff:
         if line.startswith("+") and not line.startswith("+++"):
-            discord_message += f"{line}\n"  # green for additions
+            discord_message += f"{line}"  # green for additions
         elif line.startswith("-") and not line.startswith("---"):
-            discord_message += f"{line}\n"  # red for removals
+            discord_message += f"{line}"  # red for removals
     discord_message += "```"
 
     return discord_message

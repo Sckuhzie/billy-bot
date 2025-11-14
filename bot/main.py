@@ -2,6 +2,7 @@ import os
 import random as rd
 from datetime import datetime, timedelta
 from enum import Enum
+
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
@@ -19,6 +20,8 @@ intents.messages = True  # Optional but good practice
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# Non mutable global variable
+PLAYLIST_CHANNEL_ID = 1398972120326869022  # TODO: Change to good channel when deployed
 
 # Mutable global variable
 PROBABILITY_INSULT = 1 / 30
@@ -107,10 +110,26 @@ async def playlist_diff(interaction: discord.Interaction, playlist_name: Playlis
     await interaction.response.send_message(f"Playlist saved")
 
 
+@tasks.loop(hours=24 * 7)
+async def playlist_loop():
+    await bot.wait_until_ready()
+
+    for playlist in PlaylistEnum:
+        message = get_playlist_diff(playlist.value)
+        channel = bot.get_channel(PLAYLIST_CHANNEL_ID)
+        if channel is None:
+            print("Channel not found")
+            return
+        print(message)
+        await channel.send(playlist.name)
+        await channel.send(message)
+
+
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f"Bot connected as {bot.user}")
+    playlist_loop.start()
 
 
 bot.run(bot_token)
