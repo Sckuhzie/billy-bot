@@ -60,7 +60,7 @@ def get_playlist_diff(playlist_id: str):
     with open(file1_path, "r", encoding="utf-8") as f1:
         old_playlist = f1.readlines()
 
-    new_playlist = []
+    new_playlist = [f"{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n"]
     for v in get_playlist_videos(playlist_id):
         new_playlist.append(f"{v['title']} — {v['url']}\n")
 
