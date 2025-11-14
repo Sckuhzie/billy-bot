@@ -120,7 +120,6 @@ async def playlist_loop():
         if channel is None:
             print("Channel not found")
             return
-        print(message)
         await channel.send(playlist.name)
         await channel.send(message)
 
