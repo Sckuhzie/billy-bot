@@ -32,10 +32,6 @@ Use python 3.12
   - [ ] Benchmark other LLMs to see if some of them are better (Now, it answer always the same thing to the same message)
 - [ ] Check modification in youtube playlist
   - [ ] Handle saves correctly on deployement
-- [x] When the witcher ???
-  - [ ] Random when the witcher messages (images, maybe LLM generated ?)
-  - [x] Create polls to know when is the next witcher session
-  - [ ] Check for bugs ?
 
 ## Usefull links
 

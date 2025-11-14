@@ -1,7 +1,7 @@
 import os
 import random as rd
 from datetime import datetime, timedelta
-
+from enum import Enum
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 from global_var import GlobalVars
 from insult import create_insult, create_message_stack
 from yt_playlist import get_playlist_diff, save_playlist_txt
-from when_the_witcher import create_list_polls_witcher, secure_when_the_witcher
 
 load_dotenv()
 bot_token = os.getenv("DISCORD_BOT_TOKEN")
@@ -20,27 +19,20 @@ intents.messages = True  # Optional but good practice
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Non mutable global variable
-WITCHER_CHANNEL_ID = 1398972120326869022  # TODO: Change to witcher channel
-
 
 # Mutable global variable
 PROBABILITY_INSULT = 1 / 30
-AVERAGE_DELAY_WITCHER = (
-    3.5 * 24 * 60 * 60  # Half a week, the bot will say it twice a week
-)  # Average time between each "When the witcher in seconds"
 global_var = GlobalVars()
 global_var.add("PROBABILITY_INSULT", PROBABILITY_INSULT)
-global_var.add("AVERAGE_DELAY_WITCHER", AVERAGE_DELAY_WITCHER)
 global_var.add("DO_WITCHER", False)
 
-playlists_dict = {
-    "loose": "PLs5RvnKyJmy74KrJ0YdR_W3zFvKRfMwTE",
-    "surplus": "PLs5RvnKyJmy55bJR-uYQHyZk4DMoqZGAg",
-    "inclusion": "PLs5RvnKyJmy6g8B2LcllOMMQkIQUwS-VX",
-    "claques": "PL0p2EkWqwO1Ac7EvGTsKjJl2Kgp7Q7WFv",
-    "retombees": "PL0p2EkWqwO1Bb2eKwvBjFWtX4JQ-k5r0Y",
-}
+
+class PlaylistEnum(Enum):
+    LOOSE = "PLs5RvnKyJmy74KrJ0YdR_W3zFvKRfMwTE"
+    SURPLUS = "PLs5RvnKyJmy55bJR-uYQHyZk4DMoqZGAg"
+    INCLUSION = "PLs5RvnKyJmy6g8B2LcllOMMQkIQUwS-VX"
+    CLAQUES = "PL0p2EkWqwO1Ac7EvGTsKjJl2Kgp7Q7WFv"
+    RETOMBEES = "PL0p2EkWqwO1Bb2eKwvBjFWtX4JQ-k5r0Y"
 
 
 @bot.event
@@ -95,92 +87,30 @@ async def set_variable_float(ctx: Context, key: str, value: float):
     await ctx.send(f"{key} set successfully set to {value}")
 
 
-@bot.command()
-async def toggle_witcher(ctx: Context, state: bool):
-    print(state)
-    print(type(state))
-    global_var.set("DO_WITCHER", state)
-    if state:
-        await ctx.send("When witcher enabled")
-    else:
-        await ctx.send("When witcher disabled")
+@bot.tree.command(
+    name="playlist_diff",
+    description="Get diff of play list",
+)
+async def playlist_diff(interaction: discord.Interaction, playlist_name: PlaylistEnum):
+    playlist_id = playlist_name.value
+    message = get_playlist_diff(playlist_id)
+    await interaction.response.send_message(message)
 
 
-@bot.command()
-async def playlist_diff(ctx: Context, playlist_name: str | None):
-    if playlist_name is None:
-        await ctx.send(f"Playlists available are : {list(playlists_dict.keys())}")
-        return
-    if playlist_name == "all":
-        for name, playlist_id in playlists_dict.items():
-            message = get_playlist_diff(playlist_id)
-            await ctx.send(name)
-            await ctx.send(message)
-        return
-    try:
-        playlist_id = playlists_dict[playlist_name]
-        message = get_playlist_diff(playlist_id)
-        await ctx.send(message)
-    except KeyError:
-        await ctx.send(
-            f"Playlist : {playlist_name} is not supported. Playlists supported are : {list(playlists_dict.keys())}"
-        )
-
-
-@bot.command()
-async def save_playlist(ctx: Context, playlist_name: str):
-    try:
-        playlist_id = playlists_dict[playlist_name]
-        output = save_playlist_txt(playlist_id)
-        await ctx.send(f"Playlist saved")
-    except KeyError:
-        await ctx.send(
-            f"Playlist : {playlist_name} is not supported. Playlists supported are : {playlists_dict.keys()}"
-        )
-
-
-@tasks.loop(seconds=60)
-async def when_the_witcher_loop():
-    await bot.wait_until_ready()
-
-    do_witcher = rd.random()
-    if global_var.get("DO_WITCHER") and do_witcher < 60 / global_var.get(
-        "AVERAGE_DELAY_WITCHER"
-    ):
-        channel = bot.get_channel(WITCHER_CHANNEL_ID)
-        if channel is None:
-            print("Channel not found.")
-            return
-        await channel.send("When the witcher ?")
-
-
-# Tentative de commandes propre
-@bot.tree.command(name="when_the_witcher", description="WhEn tHe WiTcHeR ???")
-# @bot.command()
-async def when_the_witch(interaction: discord.Interaction):
-    await interaction.response.send_message("WHEN ?")
-
-
-# @bot.tree.command(name="when_the_witcher")
-@bot.command()
-async def when_the_witcher(ctx: Context, start_date: str = None, end_date: str = None):
-    """Create poll for each week-end until the end of the next month for planning future Witcher sessions"""
-    try:
-        start_date, end_date = secure_when_the_witcher(start_date, end_date)
-    except ValueError as err:
-        ctx.send(err)
-
-    print(start_date, end_date)
-    list_polls = create_list_polls_witcher(start_date, end_date)
-    for p in list_polls:
-        await ctx.send(poll=p)
+@bot.tree.command(
+    name="save_playlist",
+    description="Save the new state of a playlist",
+)
+async def playlist_diff(interaction: discord.Interaction, playlist_name: PlaylistEnum):
+    playlist_id = playlist_name.value
+    output = save_playlist_txt(playlist_id)
+    await interaction.response.send_message(f"Playlist saved")
 
 
 @bot.event
 async def on_ready():
     await bot.tree.sync()
     print(f"Bot connected as {bot.user}")
-    # when_the_witcher_loop.start()
 
 
 bot.run(bot_token)
