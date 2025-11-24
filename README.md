@@ -1,20 +1,19 @@
 # billy-bot
 
-Bot for BillyLand discord server
+Bot made for a private discord server
 
 [Click here to add the bot to your server](https://discord.com/oauth2/authorize?client_id=1398970502843863130&scope=bot)
 
-Use python 3.12
+Made with python 3.12.12
 
 ## Features
 
 - Replies with generated insults when mentioned, replied to, or randomly.
-- Randomly post "When the witcher ?".
+- Compare the current state of youtube playlist with a former saved state.
 
 ### Commands
 
 - `!ping`
-- `!toggle_witcher <true|false>` – Toggle periodic `"When the witcher ?"` posts.
 - `!save_playlist <playlist_name>` – Save the current state of a playlist (Erases previous state).
 - `!playlist_diff <playlist_name>` – Show the diff between the current state of a playlist and the saved one.
 - **Global Variables**:
@@ -23,15 +22,11 @@ Use python 3.12
 
 ## Planned features
 
-- [x] Class to handle global variables
-  - [ ] Make it robust to typing
 - [x] Randomly insult people
   - [x] Proper reply to messages
   - [ ] Check for message stack only two messages (discord api limitation ?) (fetch the message from their ID)
   - [ ] Add multiple system prompt to introduce private jokes in the answers
   - [ ] Benchmark other LLMs to see if some of them are better (Now, it answer always the same thing to the same message)
-- [ ] Check modification in youtube playlist
-  - [ ] Handle saves correctly on deployement
 
 ## Usefull links
 
