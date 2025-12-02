@@ -20,7 +20,7 @@ intents.messages = True  # Optional but good practice
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Global variables
-PLAYLIST_CHANNEL_ID = 1398972120326869022  # TODO: Change to good channel when deployed
+PLAYLIST_CHANNEL_ID = 804844751320645633
 PROBABILITY_INSULT = 1 / 50
 
 

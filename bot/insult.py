@@ -12,7 +12,7 @@ load_dotenv()
 api_key = os.getenv("NVIDIA_API_KEY")
 expiration_date = datetime.strptime(os.getenv("NVIDA_EXPIRATION_DATE"), "%d/%m/%Y")
 
-system_message = """On va te donner un message d'une personne extraite d'une conversation discord. Ton rôle est d'y répondre de manière très sarcastique et agressive."""
+system_message = """On va te donner un message d'une personne extraite d'une conversation discord. Ton rôle est d'y répondre de manière très sarcastique et agressive et avec une pointe d'humour."""
 # Sur ce serveur , le message "When the witcher ?" est une private joke signifiant quand est la prochaine session du JDR the witcher, car les joueurs n'arrivent jamais à trouver de date où tout le monde est disponible."""
 
 

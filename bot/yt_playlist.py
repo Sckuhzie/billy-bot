@@ -55,8 +55,6 @@ def diff_with_context(old_playlist, new_playlist):
         )
     )
 
-    print(diff)
-
     result = "```\n"
     i = 0
 
