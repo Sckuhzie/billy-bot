@@ -1,6 +1,6 @@
 import os
 import random as rd
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 
 import discord
@@ -76,15 +76,24 @@ async def ping(ctx: Context):
 async def playlist_diff(interaction: discord.Interaction, playlist_name: PlaylistEnum):
     await interaction.response.defer()
     playlist_id = playlist_name.value
-    message = get_playlist_diff(playlist_id)
-    await interaction.followup.send(message)
+    version_date, list_message = get_playlist_diff(playlist_id)
+    if len(list_message) == 0:
+        await interaction.followup.send(
+            f"No change in the playlist: {playlist_name.value}"
+        )
+        return
+    await interaction.followup.send(
+        f"Playlist : {playlist_name.value}, saved version : {version_date}"
+    )
+    for message in list_message:
+        await interaction.channel.send(message)
 
 
 @bot.tree.command(
     name="save_playlist",
     description="Save the new state of a playlist",
 )
-async def playlist_diff(interaction: discord.Interaction, playlist_name: PlaylistEnum):
+async def save_playlist(interaction: discord.Interaction, playlist_name: PlaylistEnum):
     await interaction.response.defer()
     playlist_id = playlist_name.value
     save_playlist_txt(playlist_id)
@@ -96,13 +105,18 @@ async def playlist_loop():
     await bot.wait_until_ready()
 
     for playlist in PlaylistEnum:
-        message = get_playlist_diff(playlist.value)
+        version_date, message_list = get_playlist_diff(playlist.value)
         channel = bot.get_channel(PLAYLIST_CHANNEL_ID)
         if channel is None:
             print("Channel not found")
             return
-        await channel.send(playlist.name)
-        await channel.send(message)
+        await channel.send(
+            f"Playlist : {playlist.name}, saved version : {version_date}"
+        )
+        if len(message_list) == 0:
+            await channel.send("No changes")
+        for message in message_list:
+            await channel.send(message)
 
 
 @bot.event

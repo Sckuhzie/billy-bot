@@ -4,7 +4,8 @@ Bot made for a private discord server
 
 [Click here to add the bot to your server](https://discord.com/oauth2/authorize?client_id=1398970502843863130&scope=bot)
 
-Made with python 3.12.12
+Made with python 3.10.12.
+
 To install it you will need to rename the `.env.example` in `.env` and change the variables.
 
 ## Features
