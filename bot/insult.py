@@ -1,5 +1,5 @@
-import asyncio
 import os
+import random as rd
 from datetime import datetime, timedelta
 
 from discord.message import Message
@@ -12,8 +12,12 @@ load_dotenv()
 api_key = os.getenv("NVIDIA_API_KEY")
 expiration_date = datetime.strptime(os.getenv("NVIDA_EXPIRATION_DATE"), "%d/%m/%Y")
 
-system_message = """On va te donner un message d'une personne extraite d'une conversation discord. Ton rôle est d'y répondre de manière très sarcastique et agressive et avec une pointe d'humour."""
-# Sur ce serveur , le message "When the witcher ?" est une private joke signifiant quand est la prochaine session du JDR the witcher, car les joueurs n'arrivent jamais à trouver de date où tout le monde est disponible."""
+system_message = """Répond uniquement avec le texte du message (sans guillemets), rien d'autre. On va te donner un message d'une personne extraite d'une conversation sur un chat. Ton rôle est d'y répondre de manière très sarcastique et agressive et avec une pointe d'humour."""
+
+extra_system_prompt = [
+    # "De plus, exprime toi comme si tu était Dark Vador. Tu es arrogant et condescendant. Fait le maximum de références à star wars, ",
+    """Sur ce serveur , le message "When the witcher ?" est une private joke signifiant quand est la prochaine session du JDR the witcher, car les joueurs n'arrivent jamais à trouver de date où tout le monde est disponible. Inclu "WHEN THE WITCHER" dans la réponse.""",
+]
 
 
 def create_message_stack(message: Message, bot_user: ClientUser):
@@ -47,7 +51,13 @@ def create_message_stack(message: Message, bot_user: ClientUser):
 
 
 async def create_insult(messages_stack: list[dict[str, str]]):
-    messages_stack.insert(0, {"role": "system", "content": system_message})
+
+    if rd.random() < 0.01:
+        complete_system_message = system_message + "\n" + rd.choice(extra_system_prompt)
+    else:
+        complete_system_message = system_message
+
+    messages_stack.insert(0, {"role": "system", "content": complete_system_message})
     response = await get_completion(
         messages_stack, temperature=0.8, top_p=0.7, max_tokens=1024
     )

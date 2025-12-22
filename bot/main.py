@@ -20,7 +20,7 @@ intents.messages = True  # Optional but good practice
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Global variables
-PLAYLIST_CHANNEL_ID = 804844751320645633
+PLAYLIST_CHANNEL_ID = 804844751320645633  # 1398972120326869022
 PROBABILITY_INSULT = 1 / 50
 
 
@@ -79,11 +79,11 @@ async def playlist_diff(interaction: discord.Interaction, playlist_name: Playlis
     version_date, list_message = get_playlist_diff(playlist_id)
     if len(list_message) == 0:
         await interaction.followup.send(
-            f"No change in the playlist: {playlist_name.value}"
+            f"No change in the playlist: {playlist_name.name}"
         )
         return
     await interaction.followup.send(
-        f"Playlist : {playlist_name.value}, saved version : {version_date}"
+        f"Playlist : {playlist_name.name}, saved version : {version_date}"
     )
     for message in list_message:
         await interaction.channel.send(message)
