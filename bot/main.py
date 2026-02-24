@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 from insult import create_insult, create_message_stack
+from message_log import send_command_error_to_discord, send_response_error_to_discord
 from yt_playlist import get_playlist_diff, save_playlist_txt
 
 load_dotenv()
@@ -20,8 +21,8 @@ intents.messages = True  # Optional but good practice
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Global variables
-PLAYLIST_CHANNEL_ID = 804844751320645633  # 1398972120326869022
-PROBABILITY_INSULT = 1 / 50
+PLAYLIST_CHANNEL_ID = 804844751320645633
+PROBABILITY_INSULT = 1 / 200
 
 
 class PlaylistEnum(Enum):
@@ -33,6 +34,7 @@ class PlaylistEnum(Enum):
 
 
 @bot.event
+@send_response_error_to_discord
 async def on_message(message: discord.Message):
 
     mentioned = bot.user in message.mentions
@@ -51,14 +53,9 @@ async def on_message(message: discord.Message):
 
     if mentioned or replied_to_bot or rd.random() < PROBABILITY_INSULT:
         messages_stack = create_message_stack(message, bot.user)
+        response = await create_insult(messages_stack)
+        await message.reply(response, mention_author=False)
 
-        try:
-            response = await create_insult(messages_stack)
-            await message.reply(response, mention_author=False)
-        except Exception as e:
-            await message.channel.send(
-                f"⚠️ An error has occured when generating the answer :\n{e}"
-            )
     return
 
 
@@ -73,13 +70,14 @@ async def ping(ctx: Context):
     name="playlist_diff",
     description="Get diff of play list",
 )
+@send_command_error_to_discord
 async def playlist_diff(interaction: discord.Interaction, playlist_name: PlaylistEnum):
     await interaction.response.defer()
     playlist_id = playlist_name.value
     version_date, list_message = get_playlist_diff(playlist_id)
     if len(list_message) == 0:
         await interaction.followup.send(
-            f"No change in the playlist: {playlist_name.name}"
+            f"No change in the playlist {playlist_name.name} since {version_date}"
         )
         return
     await interaction.followup.send(
@@ -93,6 +91,7 @@ async def playlist_diff(interaction: discord.Interaction, playlist_name: Playlis
     name="save_playlist",
     description="Save the new state of a playlist",
 )
+@send_command_error_to_discord
 async def save_playlist(interaction: discord.Interaction, playlist_name: PlaylistEnum):
     await interaction.response.defer()
     playlist_id = playlist_name.value
@@ -100,7 +99,7 @@ async def save_playlist(interaction: discord.Interaction, playlist_name: Playlis
     await interaction.followup.send(f"Playlist saved")
 
 
-@tasks.loop(hours=24 * 7)
+@tasks.loop(hours=24 * 14)
 async def playlist_loop():
     await bot.wait_until_ready()
 
@@ -110,13 +109,17 @@ async def playlist_loop():
         if channel is None:
             print("Channel not found")
             return
-        await channel.send(
-            f"Playlist : {playlist.name}, saved version : {version_date}"
-        )
+
         if len(message_list) == 0:
-            await channel.send("No changes")
-        for message in message_list:
-            await channel.send(message)
+            await channel.send(
+                f"No change in the playlist {playlist.name} since {version_date}"
+            )
+        else:
+            await channel.send(
+                f"Playlist : {playlist.name}, saved version : {version_date}"
+            )
+            for message in message_list:
+                await channel.send(message)
 
 
 @bot.event
