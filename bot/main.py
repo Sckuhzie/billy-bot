@@ -110,11 +110,7 @@ async def playlist_loop():
             print("Channel not found")
             return
 
-        if len(message_list) == 0:
-            await channel.send(
-                f"No change in the playlist {playlist.name} since {version_date}"
-            )
-        else:
+        if len(message_list) != 0:
             await channel.send(
                 f"Playlist : {playlist.name}, saved version : {version_date}"
             )
